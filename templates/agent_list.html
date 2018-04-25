@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <link type="text/css"  rel="stylesheet" href="//media.twiliocdn.com/taskrouter/quickstart/agent.css"/>
+
+</head>
+<body>
+<div id="workers">
+    <h2>A selection of voice workers</h2>
+    {% for voice_worker in voice_workers %}
+      <a href="/agents?WorkerSid={{ voice_worker.sid }}">{{ voice_worker.friendly_name }}</a> <font size="-1">({{ voice_worker.activity_name }})</font><br />
+    {% endfor %}
+</div>
+<div style="padding-top:1.5em">
+    <a href="/">Back to Main Page</a>
+</div>
+</body>
+</html>
