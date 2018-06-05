@@ -18,10 +18,11 @@ workflow_sales_sid = os.environ.get("TWILIO_ACME_ALT_SALES_WORKFLOW_SID")  # sal
 workflow_billing_sid = os.environ.get("TWILIO_ACME_ALT_BILLING_WORKFLOW_SID")  # billing workflow
 workflow_mngr_sid = os.environ.get("TWILIO_ACME_ALT_MANAGER_WORKFLOW_SID") # manager escalation workflow
 twiml_app = os.environ.get("TWILIO_ACME_TWIML_APP_SID") # Twilio client application SID
-caller_id = os.environ.get("TWILIO_ACME_CALLER_ID") # Contact Center's phone number to be used in outbound communication
-
+caller_id = os.environ.get("TWILIO_ACME_CALLERID") # Contact Center's phone number to be used in outbound communication
+wrapUp = os.environ.get("TWILIO_ACME_WRAP_UP_ACTIVITY_SID")
 client = Client(account_sid, auth_token)
 
+print(workspace_sid)
 
 # Private functions
 
@@ -89,11 +90,10 @@ def unmuteCall():
     #'participant' - the customers call SID
     #'muted' - the desired muted status
 
-    participant = client \
-        .conferences(request.values.get('conference')) \
+    participant = client.conferences(request.values.get('conference')) \
         .participants(request.values.get('participant')) \
         .update(hold=request.values.get('muted'))
-
+    
     resp = VoiceResponse
     return Response(str(resp), mimetype='text/xml')
 
@@ -166,7 +166,18 @@ def transferToManager():
 
 
 
+@app.route("/assignment_callback", methods=['GET', 'POST'])
+def acceptTask():
 
+    task = request.values['TaskSid']
+    reservation = request.values['ReservationSid']
+
+    update_reservation = client.taskrouter.workflow_sid(workspace_sid).tasks(task).reservation(reservation) \
+    .update(reservation_status ='accepted')
+        
+     dequeue = '{"instruction": "dequeue", "from": "'+ caller_id +'", "post_work_activity_sid": "' + wrapUp +'"" }'
+
+     return Response(json.dumps(dequeue), mimetype='application/json')   
 
 
 
