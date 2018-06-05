@@ -13,13 +13,12 @@ app = Flask(__name__, static_folder='app/static')
 account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
 auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
 workspace_sid = os.environ.get("TWILIO_ACME_ALT_WORKSPACE_SID") # workspace
-workflow_support_sid = os.environ.get("TWILIO_ACME_ALT_SUPPORT_WORKFLOW_SID")  # support workflow
-workflow_sales_sid = os.environ.get("TWILIO_ACME_ALT_SALES_WORKFLOW_SID")  # sales workflow
-workflow_billing_sid = os.environ.get("TWILIO_ACME_ALT_BILLING_WORKFLOW_SID")  # billing workflow
-workflow_mngr_sid = os.environ.get("TWILIO_ACME_ALT_MANAGER_WORKFLOW_SID") # manager escalation workflow
+workflow_sid = ''
+
+wrapUp = os.environ.get("TWILIO_ACME_WRAP_UP_ACTIVITY_SID")
+
 twiml_app = os.environ.get("TWILIO_ACME_TWIML_APP_SID") # Twilio client application SID
 caller_id = os.environ.get("TWILIO_ACME_CALLERID") # Contact Center's phone number to be used in outbound communication
-wrapUp = os.environ.get("TWILIO_ACME_WRAP_UP_ACTIVITY_SID")
 client = Client(account_sid, auth_token)
 
 print(workspace_sid)
@@ -53,11 +52,6 @@ def enqueue_call():
 
     if 'Digits' in request.values:
         choice = int(request.values['Digits'])
-        switcher = {
-            1: os.environ.get('TWILIO_ACME_ALT_SALES_WORKFLOW_SID'),
-            2: os.environ.get('TWILIO_ACME_ALT_SUPPORT_WORKFLOW_SID'),
-            3: os.environ.get('TWILIO_ACME_ALT_BILLING_WORKFLOW_SID')
-        }
 
         dept = {
             1: "sales",
@@ -67,7 +61,7 @@ def enqueue_call():
         }
         resp = VoiceResponse()
         resp.say('Thank you, connecting you now')
-        with resp.enqueue(workflow_sid=switcher[choice]) as e:
+        with resp.enqueue(workflow_sid=workflow_sid) as e:
             e.task('{"selected_product" : "' + dept[choice] + '"}')
 
         return Response(str(resp), mimetype='text/xml')
@@ -137,7 +131,7 @@ def transferCall():
         .update(hold=True)
 
     task = client.taskrouter.workspaces(workspace_sid).tasks \
-        .create(workflow_sid=workflow_mngr_sid, task_channel="voice",
+        .create(workflow_sid=workflow_sid, task_channel="voice",
                 attributes='{'
                            '"selected_product":"manager",'
                            '"conference":"' + request.values.get('conference') + '", '
@@ -169,15 +163,9 @@ def transferToManager():
 @app.route("/assignment_callback", methods=['GET', 'POST'])
 def acceptTask():
 
-    task = request.values['TaskSid']
-    reservation = request.values['ReservationSid']
-
-    update_reservation = client.taskrouter.workflow_sid(workspace_sid).tasks(task).reservation(reservation) \
-    .update(reservation_status ='accepted')
-        
      dequeue = '{"instruction": "dequeue", "from": "'+ caller_id +'", "post_work_activity_sid": "' + wrapUp +'"" }'
 
-     return Response(json.dumps(dequeue), mimetype='application/json')   
+     return Response(dequeue, mimetype='application/json')   
 
 
 
