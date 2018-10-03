@@ -1,9 +1,12 @@
-# Contact-Centre skeleton Version 0.1
+# Contact-Centre Version 1.0
 
 Inbound PSTN to Twilio Client Contact Centre Powered by Taskrouter 
 
+<<<<<<< HEAD
 This is training code and is not intended for production usage.
 
+=======
+>>>>>>> 795db5578e27b6ed7d64aac67fa86075bc6fcab1
 Languages: Python, js
 
 This implements:
