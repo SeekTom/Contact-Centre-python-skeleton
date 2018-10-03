@@ -13,7 +13,7 @@ app = Flask(__name__, static_folder='app/static')
 account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
 auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
 workspace_sid = os.environ.get("TWILIO_ACME_WORKSPACE_SID")
-workflow_sid = os.environ.get("TWILIO_ACME_SUPPORT_WORKFLOW_SID")
+workflow_sid = os.environ.get("TWILIO_ACME_WORKFLOW_SID")
 
 wrapUp = os.environ.get("TWILIO_ACME_WRAP_UP_ACTIVITY_SID")
 
