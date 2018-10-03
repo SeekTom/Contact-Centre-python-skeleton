@@ -98,15 +98,15 @@
         function registerTaskRouterCallbacks() {
             worker.on('ready', function (worker) {
                 logger("Successfully registered as: " + worker.friendlyName);
-                if(worker.attributes.skills && worker.attributes.skills.includes('manager')) {
-                    document.querySelector('h2').innerHTML = "ACME manager desktop: " + worker.friendlyName;
-                    isManager = true;
-                } else {
-                    document.querySelector('h2').innerHTML = "ACME agent desktop: " + worker.friendlyName;
-                }
-                if(worker.attributes.skills) {
-                    logger("Skills: " + worker.attributes.skills);
-                }
+                // if(worker.attributes.skills && worker.attributes.skills.includes('manager')) {
+                //     document.querySelector('h2').innerHTML = "ACME manager desktop: " + worker.friendlyName;
+                //     isManager = true;
+                // } else {
+                //     document.querySelector('h2').innerHTML = "ACME agent desktop: " + worker.friendlyName;
+                // }
+                // if(worker.attributes.skills) {
+                //     logger("Skills: " + worker.attributes.skills);
+                // }
                     logger("Current activity is: " + worker.activityName);
                 refreshWorkerUI(worker);
             });
@@ -233,8 +233,6 @@
                     "{{ caller_id }}",  // CC's phone number
                     // callUrl - URI that is executed on the answering Worker's leg
                     window.location.protocol + "//" + window.location.host + "/transferTwiml?TaskSid=" + ReservationObject.task.attributes.customer_taskSid,
-                    // callStatusCallbackUrl (optional) - status callback url
-                    window.location.protocol + "//" + window.location.host + "/conference_callback",
                     // callAccept (optional) - accept the task before initiating call
                     "false",
                         "false",
@@ -259,10 +257,7 @@
                     "PostWorkActivitySid": "{{ activity['WrapUp'] }}",
                     "Timeout": "30",
                     "Record": "true",
-                    "RecordingStatusCallback": window.location.protocol + "//" + window.location.host + "/recording_callback",
-                    "ConferenceStatusCallback": window.location.protocol + "//" + window.location.host + "/conference_callback",
-                    "ConferenceStatusCallbackEvent": "start,end,join,leave"
-                };
+                           };
                 console.log("Starting conference...");
                 console.log(options);
 

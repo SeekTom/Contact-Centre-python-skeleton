@@ -12,16 +12,15 @@ app = Flask(__name__, static_folder='app/static')
 # Your Account Sid and Auth Token from twilio.com/user/account
 account_sid = os.environ.get("TWILIO_ACME_ACCOUNT_SID")
 auth_token = os.environ.get("TWILIO_ACME_AUTH_TOKEN")
-workspace_sid = os.environ.get("TWILIO_ACME_ALT_WORKSPACE_SID") # workspace
-workflow_sid = ''
+workspace_sid = os.environ.get("TWILIO_ACME_WORKSPACE_SID") # workspace
+workflow_sid = os.environ.get("TWILIO_ACME_WORKSPACE_SID")
 
 wrapUp = os.environ.get("TWILIO_ACME_WRAP_UP_ACTIVITY_SID")
 
 twiml_app = os.environ.get("TWILIO_ACME_TWIML_APP_SID") # Twilio client application SID
 caller_id = os.environ.get("TWILIO_ACME_CALLERID") # Contact Center's phone number to be used in outbound communication
-client = Client(account_sid, auth_token)
 
-print(workspace_sid)
+client = Client(account_sid, auth_token)
 
 # Private functions
 
@@ -38,6 +37,7 @@ def incoming_call():
     # Docs: https://www.twilio.com/docs/voice/twiml/gather
 
     resp = VoiceResponse()
+    
     with resp.gather(num_digits="1", action="/enqueue_call", timeout=10) as g:
        g.say("For sales press one, for support press two, for billing press three", language="en")
 
@@ -57,13 +57,14 @@ def enqueue_call():
             1: "sales",
             2: "support",
             3: "billing"
-
         }
+        
         resp = VoiceResponse()
+        
         resp.say('Thank you, connecting you now')
+        
         with resp.enqueue(workflow_sid=workflow_sid) as e:
             e.task('{"selected_product" : "' + dept[choice] + '"}')
-
         return Response(str(resp), mimetype='text/xml')
     else:
         resp = VoiceResponse()

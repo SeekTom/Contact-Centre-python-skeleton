@@ -2,7 +2,7 @@
 
 Inbound PSTN to Twilio Client Contact Centre Powered by Taskrouter 
 
-WIP: This is a training version, certain sections have been left for trainees to add code/functionality
+This is training code and is not intended for production usage.
 
 Languages: Python, js
 
